@@ -1,0 +1,20 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <!-- Sign in -->
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="{{ .GoogleAuthClientID }}">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  </head>
+  <body>
+{{end}}
