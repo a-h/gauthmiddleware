@@ -33,25 +33,28 @@ func NewHandler(session session.Session,
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	logger.For(pkg, "ServeHTTP").WithField("url", r.URL.Path).Info("Attempt to access")
 	if r.Method == http.MethodPost {
 		// Retrieve the token from Google and validate it against our requirements.
 		r.ParseForm()
 		idToken := r.FormValue("id_token")
 
-		_, err := h.TokenVerifier.ValidateToken(idToken)
+		claims, err := h.TokenVerifier.ValidateToken(idToken)
 		if err != nil {
 			logger.For(pkg, "ServeHTTP").WithField("idToken", idToken).WithError(err).Error("Invalid token")
 			http.Error(w, "The presented claim is invalid.", http.StatusInternalServerError)
 			return
 		}
+		h.Session.Start(w, r, claims.Email)
 	}
 	isValid, email, err := h.Session.Validate(r)
 	if err != nil {
-		logger.For(pkg, "ServeHTTP").WithField("email", email).WithError(err).Error("Invalid session")
+		logger.For(pkg, "ServeHTTP").WithField("email", email).WithError(err).Error("Error validating session")
 		http.Error(w, "Unable to validate session.", http.StatusInternalServerError)
 		return
 	}
 	if !isValid {
+		logger.For(pkg, "ServeHTTP").WithField("email", email).Error("Invalid session")
 		h.RenderLogin(w, r)
 		return
 	}

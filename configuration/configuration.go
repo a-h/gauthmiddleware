@@ -29,13 +29,12 @@ type Configuration struct {
 func FromEnvironment() (c Configuration, err error) {
 	var errs []string
 
-	var n int
-	n, err = base64.RawStdEncoding.Decode(c.SessionEncryptionKey, []byte(os.Getenv("SESSION_ENCRYPTION_KEY")))
+	c.SessionEncryptionKey, err = base64.StdEncoding.DecodeString(os.Getenv("SESSION_ENCRYPTION_KEY"))
 	if err != nil {
 		errs = append(errs, fmt.Sprintf("SESSION_ENCRYPTION_KEY: not found, or invalid: %v", err))
 	}
-	if n != 32 {
-		errs = append(errs, fmt.Sprintf("SESSION_ENCRYPTION_KEY: expected 32 bytes when base64 decoded"))
+	if len(c.SessionEncryptionKey) != 32 {
+		errs = append(errs, fmt.Sprintf("SESSION_ENCRYPTION_KEY: expected 32 bytes when base64 decoded, got %d bytes", len(c.SessionEncryptionKey)))
 	}
 
 	c.CookieName = os.Getenv("COOKIE_NAME")
